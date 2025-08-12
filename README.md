@@ -2,11 +2,6 @@
 
 ### _stories before starlight_
 
-![Little Moonbeams Screenshot](https://i.imgur.com/your-screenshot-url.png) 
-*(**Note:** You should take a beautiful screenshot of your finished app and replace this link!)*
-
----
-
 ## 📖 About The Project
 
 Little Moonbeams is a magical bedtime story generator designed to create unique, gentle, and personalized tales for children. By combining a moral or theme provided by the user with a rich universe from classic Indian folklore, Little Moonbeams uses the power of AI to craft a brand new story every time.
