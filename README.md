@@ -1,6 +1,6 @@
 # Little Moonbeams ✨
 
-### _stories before starlight_
+### _Stories before Starlight_
 
 ## 📖 About The Project
 
