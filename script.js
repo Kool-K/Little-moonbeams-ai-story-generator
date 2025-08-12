@@ -105,7 +105,7 @@
     storyTitle.textContent = `A story about ${moral}...`;
     storyContainer.innerHTML = `<p class="placeholder">The moonbeams are gathering your story...</p>`;
     try {
-      const response = await fetch('http://localhost:5000/generate_story', {
+      const response = await fetch('https://ketakis-little-moonbeams-ai-story.onrender.com/generate_story', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
