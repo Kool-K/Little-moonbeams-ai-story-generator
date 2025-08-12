@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Little Moonbeams — Story Selector</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <!-- This is the updated code with the new logo and tagline -->
+      <header class="header">
+        <div class="brand">
+          <!-- The placeholder div is now an image tag! -->
+          <img
+            src="assets/logo.png"
+            alt="Little Moonbeams Logo"
+            class="logo-image"
+          />
+          <div>
+            <h1 class="app-title">Little Moonbeams</h1>
+            <!-- The new tagline is here! -->
+            <p class="app-sub">Stories Before Starlight</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="controls card">
+          <label class="label" for="moralInput">Moral / Theme</label>
+          <input
+            id="moralInput"
+            class="input"
+            type="text"
+            placeholder="e.g. kindness, honesty, sharing"
+            aria-label="Moral or theme"
+          />
+
+          <p class="label small">Choose a story type</p>
+          <div id="types" class="types" role="list">
+            <!-- Story type cards -->
+            <button
+              class="type-card"
+              data-type="Tenali Raman"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/tenali.png" alt="Tenali Raman" />
+              <span>Tenali Raman</span>
+            </button>
+            <button
+              class="type-card"
+              data-type="Akbar & Birbal"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/akbar-birbal.png" alt="Akbar and Birbal" />
+              <span>Akbar & Birbal</span>
+            </button>
+            <button
+              class="type-card"
+              data-type="Vikram & Betal"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/vikram-betal.png" alt="Vikram and Betal" />
+              <span>Vikram & Betal</span>
+            </button>
+            <button
+              class="type-card"
+              data-type="Panchatantra"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/panchatantra.png" alt="Panchatantra" />
+              <span>Panchatantra</span>
+            </button>
+            <button
+              class="type-card"
+              data-type="Mahabharata"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/mahabharata.png" alt="Mahabharata" />
+              <span>Mahabharata</span>
+            </button>
+            <button
+              class="type-card"
+              data-type="Ramayana"
+              aria-pressed="false"
+              role="listitem"
+            >
+              <img src="assets/ramayana.png" alt="Ramayana" />
+              <span>Ramayana</span>
+            </button>
+          </div>
+
+          <div class="row timer-row">
+            <label class="label small">Sleep timer</label>
+            <div id="timerOptions" class="timer-options">
+              <button class="timer-btn active-timer" data-value="0">
+                No Timer
+              </button>
+              <button class="timer-btn" data-value="10">10 min</button>
+              <button class="timer-btn" data-value="20">20 min</button>
+              <button class="timer-btn" data-value="30">30 min</button>
+              <button class="timer-btn" data-value="45">45 min</button>
+            </div>
+          </div>
+
+          <!-- Voice Selection Dropdown -->
+          <!-- New structure for the custom voice dropdown -->
+          <div class="row voice-row">
+            <label class="label small">Narration Voice</label>
+            <div class="custom-select-wrapper">
+              <select id="voiceSelect"></select>
+              <!-- The real select is now hidden by CSS -->
+              <div class="custom-select-display" tabindex="0">
+                <span id="customSelectValue">Select a voice...</span>
+                <span class="custom-arrow"></span>
+              </div>
+              <ul id="customSelectOptions" class="custom-select-options">
+                <!-- Options will be added here by JavaScript -->
+              </ul>
+            </div>
+          </div>
+
+          <button
+            id="generateBtn"
+            class="primary-btn"
+            aria-label="Generate story"
+          >
+            ✨ Generate Story
+          </button>
+        </section>
+
+        <section class="story card">
+          <div class="story-header">
+            <h2 id="storyTitle">Your story will appear here</h2>
+            <span id="timerDisplay" class="timer-display"></span>
+            <div class="player">
+              <button id="playBtn" class="icon-btn" title="Play">▶</button>
+              <button id="pauseBtn" class="icon-btn" title="Pause">⏸</button>
+              <button id="stopBtn" class="icon-btn" title="Stop">⏹</button>
+            </div>
+          </div>
+          <article id="storyContainer" class="story-body" aria-live="polite">
+            <p class="placeholder">
+              Type a moral, pick a story type, then press Generate. The app will
+              read the story aloud using your browser's voice.
+            </p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <!-- Full-screen sleep overlay (hidden until timer expires) -->
+    <div id="sleepOverlay" class="sleep-overlay" aria-hidden="true">
+      <div class="sleep-centre">
+        <div class="moon-large"></div>
+        <p>Goodnight ✨</p>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

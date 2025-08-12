@@ -1,0 +1,28 @@
+# ==============================================================================
+# .gitignore for the Little Moonbeams Project
+# ==============================================================================
+
+# --- Python Virtual Environment ---
+# Ignore the virtual environment folder, which contains installed packages.
+venv/
+/venv/
+
+# --- Environment Variables ---
+# CRITICAL: Ignore the .env file to protect your secret API key.
+.env
+*.env
+
+# --- Python Cache ---
+# Ignore the folder Python creates for temporary compiled files.
+__pycache__/
+*.pyc
+
+# --- IDE / Editor specific files ---
+# Ignore settings files from common editors like VS Code.
+.vscode/
+.idea/
+
+# --- Operating System files ---
+# Ignore files created by macOS and Windows.
+.DS_Store
+Thumbs.db
