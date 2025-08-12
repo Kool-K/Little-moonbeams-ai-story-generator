@@ -17,6 +17,10 @@ venv/
 __pycache__/
 *.pyc
 
+# --- Node.js Dependencies ---
+# Ignore the massive folder of Node.js packages.
+node_modules/
+
 # --- IDE / Editor specific files ---
 # Ignore settings files from common editors like VS Code.
 .vscode/
