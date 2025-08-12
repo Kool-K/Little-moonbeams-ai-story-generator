@@ -1,11 +1,6 @@
 # Little Moonbeams ✨
 
-### _stories before starlight_
-
-![Little Moonbeams Screenshot](https://i.imgur.com/your-screenshot-url.png) 
-*(**Note:** You should take a beautiful screenshot of your finished app and replace this link!)*
-
----
+### _Stories before Starlight_
 
 ## 📖 About The Project
 
