@@ -2,6 +2,11 @@
 
 ### _Stories before Starlight_
 
+## 🚀 Live Demo
+
+**[Click here to try Little Moonbeams!](https://kool-k.github.io/Little-moonbeams-ai-story-generator/)**
+
+
 ## 📖 About The Project
 
 Little Moonbeams is a magical bedtime story generator designed to create unique, gentle, and personalized tales for children. By combining a moral or theme provided by the user with a rich universe from classic Indian folklore, Little Moonbeams uses the power of AI to craft a brand new story every time.
