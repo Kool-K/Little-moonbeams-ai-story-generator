@@ -137,74 +137,109 @@
     }
   });
 
-  // --- 5. Speech Synthesis with Chunking ---
+  // --- 5. Speech Synthesis with Chunking (Improved) ---
+
+  // This is a "keep-alive" timer to prevent the speech engine from sleeping.
+  let keepAliveInterval = null;
+
   function splitIntoChunks(text) {
-    return text.match(/[^.!?]+[.!?]+|\s*$/g)
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+    // This is a more robust way to split the text into sentences.
+    // It ensures that punctuation is kept with the sentence and doesn't get isolated.
+    const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
+    return chunks ? chunks.map(c => c.trim()).filter(c => c) : [];
   }
 
   function speak(story) {
     if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+    // Use our new, dedicated function to stop everything and reset.
+    stopSpeech();
 
-    // First chunk = just the title with a pause
-    speechQueue = [`${story.title}. `, ...splitIntoChunks(story.text)];
-
+    speechQueue = splitIntoChunks(story.title + ". " + story.text);
     currentChunkIndex = 0;
     isPaused = false;
     isSpeaking = true;
 
-    // Longer delay to ensure voices are ready
+    // This is the "keep-alive" trick. We will ping the speech engine every 5 seconds
+    // to keep it "warm" and prevent it from creating awkward pauses between sentences.
+    keepAliveInterval = setInterval(() => {
+      speechSynthesis.resume();
+    }, 5000);
+
+    // This delay prevents the very first word of the title from being cut off.
     setTimeout(() => {
       speakNextChunk();
-    }, 250); // Increased from 100ms → 250ms
+    }, 250);
   }
 
-
   function speakNextChunk() {
-    if (currentChunkIndex < speechQueue.length && !isPaused) {
-      currentUtterance = new SpeechSynthesisUtterance(speechQueue[currentChunkIndex]);
+    if (currentChunkIndex >= speechQueue.length) {
+      // We've reached the end of the story, so we stop everything.
+      stopSpeech();
+      return;
+    }
+
+    if (!isPaused) {
+      const chunk = speechQueue[currentChunkIndex];
+      const utterance = new SpeechSynthesisUtterance(chunk);
       const voices = speechSynthesis.getVoices();
-      currentUtterance.voice = voices.find(v => v.name === selectedVoiceName) || voices[0];
-      currentUtterance.rate = 0.95;
-      currentUtterance.pitch = 1.0;
-      currentUtterance.onend = () => {
-        if (!isPaused) {
-          currentChunkIndex++;
-          speakNextChunk();
-        }
+
+      // We set the voice on every single chunk to prevent it from changing mid-story.
+      utterance.voice = voices.find(v => v.name === selectedVoiceName) || voices[0];
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      // When this sentence is finished, automatically move to the next one.
+      utterance.onend = () => {
+        currentChunkIndex++;
+        speakNextChunk();
       };
-      speechSynthesis.speak(currentUtterance);
-    } else if (currentChunkIndex >= speechQueue.length) {
-      isSpeaking = false;
+
+      speechSynthesis.speak(utterance);
     }
   }
 
-  // --- 6. Player Controls ---
+  // --- 6. Player Controls (Improved Logic) ---
+
+  // A new, dedicated function to stop and reset everything cleanly.
+  function stopSpeech() {
+    isSpeaking = false;
+    isPaused = false;
+    currentChunkIndex = 0;
+    speechQueue = [];
+    // IMPORTANT: We must clear the keep-alive timer when we stop.
+    if (keepAliveInterval) {
+      clearInterval(keepAliveInterval);
+      keepAliveInterval = null;
+    }
+    speechSynthesis.cancel();
+  }
+
   playBtn.addEventListener('click', () => {
     if (!currentStory) return;
+
     if (isPaused) {
       isPaused = false;
+      // When we resume, we also need to restart our keep-alive timer.
+      keepAliveInterval = setInterval(() => { speechSynthesis.resume(); }, 5000);
       speechSynthesis.resume();
-      if (!speechSynthesis.speaking) speakNextChunk();
     } else if (!isSpeaking) {
       speak(currentStory);
     }
   });
 
   pauseBtn.addEventListener('click', () => {
-    if (isSpeaking && !isPaused) {
+    if (speechSynthesis.speaking && !isPaused) {
       isPaused = true;
+      // We must stop the keep-alive timer when paused, or it will force a resume!
+      clearInterval(keepAliveInterval);
+      keepAliveInterval = null;
       speechSynthesis.pause();
     }
   });
 
   stopBtn.addEventListener('click', () => {
-    isPaused = false;
-    isSpeaking = false;
-    speechSynthesis.cancel();
-    currentChunkIndex = 0;
+    // The stop button now just calls our new, clean stop function.
+    stopSpeech();
   });
 
   // --- 7. Sleep Timer Logic ---
