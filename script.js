@@ -139,21 +139,28 @@
 
   // --- 5. Speech Synthesis with Chunking ---
   function splitIntoChunks(text) {
-    return text.match(/[^.!?]+[.!?]+|\s*$/g).map(s => s.trim()).filter(s => s.length > 0);
+    return text.match(/[^.!?]+[.!?]+|\s*$/g)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
   }
 
   function speak(story) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    speechQueue = splitIntoChunks(story.title + ". " + story.text);
+
+    // First chunk = just the title with a pause
+    speechQueue = [`${story.title}. `, ...splitIntoChunks(story.text)];
+
     currentChunkIndex = 0;
     isPaused = false;
     isSpeaking = true;
-    // Add a tiny delay to prevent the first word from being cut off
+
+    // Longer delay to ensure voices are ready
     setTimeout(() => {
       speakNextChunk();
-    }, 100); // 100 milliseconds is usually enough time for the browser to be ready
+    }, 250); // Increased from 100ms → 250ms
   }
+
 
   function speakNextChunk() {
     if (currentChunkIndex < speechQueue.length && !isPaused) {
