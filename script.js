@@ -8,20 +8,21 @@
   const typeCards = Array.from(document.querySelectorAll('.type-card'));
   const timerBtns = document.querySelectorAll('.timer-btn');
   const generateBtn = document.getElementById('generateBtn');
-  
+
   const voiceRow = document.querySelector('.voice-row');
   const customSelectDisplay = document.querySelector('.custom-select-display');
   const customSelectValue = document.getElementById('customSelectValue');
   const customOptionsList = document.getElementById('customSelectOptions');
 
   const storyTitle = document.getElementById('storyTitle');
+  const storyCard = document.querySelector('.story.card'); // Add this line
   const storyContainer = document.getElementById('storyContainer');
   const timerDisplay = document.getElementById('timerDisplay');
-  
+
   const playBtn = document.getElementById('playBtn');
   const pauseBtn = document.getElementById('pauseBtn');
   const stopBtn = document.getElementById('stopBtn');
-  
+
   const sleepOverlay = document.getElementById('sleepOverlay');
 
   // --- 2. State Variables ---
@@ -59,12 +60,12 @@
       customOptionsList.appendChild(optionItem);
     });
     const options = Array.from(customOptionsList.querySelectorAll('li'));
-    const bestOption = 
-        options.find(opt => opt.getAttribute('data-name') === 'Google हिन्दी') ||
-        options.find(opt => opt.textContent.includes('hi-IN')) ||
-        options.find(opt => opt.textContent.includes('en-IN')) ||
-        options.find(opt => opt.textContent.includes('Google')) ||
-        options[0];
+    const bestOption =
+      options.find(opt => opt.getAttribute('data-name') === 'Google हिन्दी') ||
+      options.find(opt => opt.textContent.includes('hi-IN')) ||
+      options.find(opt => opt.textContent.includes('en-IN')) ||
+      options.find(opt => opt.textContent.includes('Google')) ||
+      options[0];
     if (bestOption) {
       bestOption.click();
     }
@@ -123,6 +124,7 @@
       p.textContent = data.text;
       p.style.lineHeight = '1.7';
       storyContainer.appendChild(p);
+      storyCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
       speak(currentStory);
       startSleepTimerIfNeeded();
     } catch (err) {
@@ -147,7 +149,10 @@
     currentChunkIndex = 0;
     isPaused = false;
     isSpeaking = true;
-    speakNextChunk();
+    // Add a tiny delay to prevent the first word from being cut off
+    setTimeout(() => {
+      speakNextChunk();
+    }, 100); // 100 milliseconds is usually enough time for the browser to be ready
   }
 
   function speakNextChunk() {
@@ -203,7 +208,7 @@
     const endTime = Date.now() + minutes * 60 * 1000;
     sleepTimerId = setTimeout(() => {
       activateSleepOverlay();
-      try { speechSynthesis.cancel(); } catch (e) {}
+      try { speechSynthesis.cancel(); } catch (e) { }
       clearSleepTimer();
     }, minutes * 60 * 1000);
     sleepTimerIntervalId = setInterval(() => {
@@ -244,7 +249,7 @@
 
   // --- 8. Initial Setup ---
   window.addEventListener('beforeunload', () => {
-    try { speechSynthesis.cancel(); } catch (e) {}
+    try { speechSynthesis.cancel(); } catch (e) { }
     clearSleepTimer();
   });
 

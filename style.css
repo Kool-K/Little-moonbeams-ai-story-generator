@@ -121,20 +121,8 @@ body {
   font-size: 1.1rem;
   font-weight: 300;
   letter-spacing: 0.5px;
-  position: relative;
-  display: inline-block;
 }
 
-.app-sub::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 40px;
-  height: 2px;
-  background: var(--accent-gradient);
-  border-radius: 2px;
-}
 
 /* --- Main Layout --- */
 .main {
@@ -678,10 +666,6 @@ body {
     text-align: center;
   }
   
-  .app-sub::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
 }
 
 @media (max-width: 600px) {
