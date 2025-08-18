@@ -154,8 +154,9 @@ def generate_story():
         Before you write, you MUST follow these final rules precisely:
         a.  The story must be completely safe and appropriate for young children (ages 4-8). If the user's theme ('{moral_word}') seems inappropriate or hateful, IGNORE it and write a story about "kindness". However, if it's a teachable negative emotion like 'anger' or 'greed', create a story where a character learns a positive lesson about it.
         b.  The story's length must follow this instruction: {length_instruction}.
-        c.  **Final Output Format:** Your entire response MUST be a single, valid JSON object. It must have two keys: "title" (a creative title for the story) and "text" (the full story text).
-        d.  Strictly adhere to the "Mandatory Structure to Follow" outlined in your persona in YOUR PERSONA AND CONTEXT. This is not optional.
+        c.  **Title Generation:** After writing the story, create a thoughtful and evocative title that accurately reflects the core moral or a key event from the text. The title should sound like a classic folktale title, not an overly simplistic or childish one.
+        d.  **Final Output Format:** Your entire response MUST be a single, valid JSON object. It must have two keys: "title" (generated according to the rule above) and "text" (the full story text).
+        e.  Strictly adhere to the "Mandatory Structure to Follow" outlined in your persona in YOUR PERSONA AND CONTEXT. This is not optional.
 
 **User's Moral Theme:** "{moral_word}"
 
