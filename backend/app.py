@@ -1,8 +1,4 @@
-# ==============================================================================
-# Final app.py for Little Moonbeams (v4 - with Smart Moral Handling)
-# This file includes all fixes and features.
-# - NEW: Upgraded prompt to intelligently handle negative but teachable morals.
-# ==============================================================================
+
 
 import os
 import json
@@ -10,7 +6,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 
-# --- 1. Initialization and Configuration ---
+# ---  Initialization and Configuration ---
 app = Flask(__name__)
 CORS(app)
 
@@ -21,7 +17,7 @@ except Exception as e:
     print("Please ensure your GEMINI_API_KEY is set in a .env file.")
 
 
-# --- 2. Story Contexts Dictionary ---
+# --- Story Context ---
 STORY_CONTEXTS = {
     "tenali_raman": """
 You are a master children’s storyteller narrating a genuine Tenali Raman folktale.
@@ -115,7 +111,7 @@ Tone: Upbeat, devotional, and suitable for the youngest listeners.
 
 
 
-# --- 3. API Routes ---
+# --- API Routes ---
 @app.route("/")
 def home():
     return "<h1>Little Moonbeams Backend is Running!</h1>"
@@ -144,7 +140,6 @@ def generate_story():
         word_count = duration * 150
         length_instruction = f"The story MUST be long enough to be read aloud in approximately {duration} minutes. Aim for a word count of around {word_count} words."
 
-    # --- THIS IS THE NEW, SMARTER PROMPT ---
     full_prompt = f"""
 **YOUR PERSONA AND CONTEXT**
 {STORY_CONTEXTS[formatted_category]}
@@ -183,6 +178,6 @@ def generate_story():
         return jsonify({"error": "Failed to generate story from the AI. Check backend logs."}), 500
 
 
-# --- 4. Run the App ---
+# --- to run the App ---
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

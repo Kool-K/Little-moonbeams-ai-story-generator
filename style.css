@@ -1,6 +1,4 @@
-/* ==============================================================================
-   Little Moonbeams - Premium UI Refresh
-   ============================================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap');
@@ -28,7 +26,7 @@
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* --- Global Styles --- */
+/*Global Styles*/
 * {
   box-sizing: border-box;
   margin: 0;
@@ -57,7 +55,7 @@ body {
   position: relative;
 }
 
-/* Background Decorative Elements */
+/* Background Elts */
 .app::before {
   content: "";
   position: fixed;
@@ -70,7 +68,7 @@ body {
   pointer-events: none;
 }
 
-/* --- Header & Brand --- */
+/* Header and brand*/
 .header {
   display: flex;
   align-items: center;
@@ -124,7 +122,7 @@ body {
 }
 
 
-/* --- Main Layout --- */
+/* main layout */
 .main {
   display: grid;
   grid-template-columns: 380px 1fr;
@@ -132,7 +130,7 @@ body {
   align-items: start;
 }
 
-/* --- Cards --- */
+/*cards*/
 .card {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
@@ -170,7 +168,7 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* --- Inputs & Controls --- */
+/* input and control styles */
 .input {
   width: 100%;
   padding: 16px 18px;
@@ -202,7 +200,7 @@ body {
   margin-top: 20px;
 }
 
-/* --- Story Type Cards --- */
+/* story Type Cards*/
 .types {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -295,7 +293,7 @@ body {
   font-weight: 700;
 }
 
-/* --- Generate Button --- */
+/* -generate button styling*/
 .primary-btn {
   display: inline-flex;
   align-items: center;
@@ -341,7 +339,7 @@ body {
   transform: translateY(1px);
 }
 
-/* --- Story Panel --- */
+/* story display panel*/
 .story {
   position: relative;
 }
@@ -432,7 +430,7 @@ body {
   background: var(--accent);
 }
 
-/* --- Sleep Overlay & Timer --- */
+/* sleep overlay goodnight screen and timer*/
 .sleep-overlay { 
   position: fixed; 
   inset: 0; 
@@ -482,7 +480,7 @@ body {
   100% { transform: scale(1.05); box-shadow: 0 0 100px rgba(109, 179, 255, 0.6); }
 }
 
-/* --- Timer Buttons --- */
+/* timer buttons */
 .timer-row { 
   flex-direction: column; 
   align-items: flex-start; 
@@ -522,7 +520,7 @@ body {
   box-shadow: 0 5px 15px rgba(109, 179, 255, 0.3);
 }
 
-/* --- Countdown Display --- */
+/* countdown display */
 .timer-display { 
   font-size: 0.95rem; 
   color: var(--muted); 
@@ -541,7 +539,7 @@ body {
   opacity: 1; 
 }
 
-/* --- Custom Voice Dropdown --- */
+/* voice dropdown */
 .voice-row { 
   margin-top: 28px; 
   flex-direction: column; 
@@ -638,7 +636,7 @@ body {
   font-weight: 600; 
 }
 
-/* --- Responsive Design --- */
+/* make site responsive */
 @media (max-width: 900px) {
   .app {
     padding: 32px 24px;

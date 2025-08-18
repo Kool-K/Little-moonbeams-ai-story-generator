@@ -1,9 +1,6 @@
-// ==============================================================================
-// Final script.js for Little Moonbeams (v6.1 - with Chunked Player Controls Fix)
-// ==============================================================================
+
 
 (() => {
-  // --- 1. Get all the elements from the HTML ---
   const moralInput = document.getElementById('moralInput');
   const typeCards = Array.from(document.querySelectorAll('.type-card'));
   const timerBtns = document.querySelectorAll('.timer-btn');
@@ -15,7 +12,7 @@
   const customOptionsList = document.getElementById('customSelectOptions');
 
   const storyTitle = document.getElementById('storyTitle');
-  const storyCard = document.querySelector('.story.card'); // Add this line
+  const storyCard = document.querySelector('.story.card');
   const storyContainer = document.getElementById('storyContainer');
   const timerDisplay = document.getElementById('timerDisplay');
 
@@ -25,7 +22,7 @@
 
   const sleepOverlay = document.getElementById('sleepOverlay');
 
-  // --- 2. State Variables ---
+  //State Variables
   let selectedType = null;
   let currentStory = null;
   let selectedSleepMinutes = 0;
@@ -40,7 +37,7 @@
   let isSpeaking = false;
   let currentUtterance = null;
 
-  // --- 3. Voice Population & Custom Dropdown Logic ---
+  // Voice Population + Custom Dropdown Logic  used speechsynth version for this
   function populateVoiceList() {
     if (typeof speechSynthesis === 'undefined') return;
     const voices = speechSynthesis.getVoices();
@@ -80,7 +77,7 @@
     }
   });
 
-  // --- 4. Event Listeners & Main App Flow ---
+  // Event Listeners & Main App Flow
   typeCards.forEach(card => {
     card.addEventListener('click', () => {
       typeCards.forEach(c => c.setAttribute('aria-pressed', 'false'));
@@ -137,21 +134,19 @@
     }
   });
 
-  // --- 5. Speech Synthesis with Chunking (Improved) ---
+  // Speech Synthesis with Chunking
 
-  // This is a "keep-alive" timer to prevent the speech engine from sleeping.
+  // prevents the speech engine from sleeping.
   let keepAliveInterval = null;
 
   function splitIntoChunks(text) {
-    // This is a more robust way to split the text into sentences.
-    // It ensures that punctuation is kept with the sentence and doesn't get isolated.
+
     const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
     return chunks ? chunks.map(c => c.trim()).filter(c => c) : [];
   }
 
   function speak(story) {
     if (!('speechSynthesis' in window)) return;
-    // Use our new, dedicated function to stop everything and reset.
     stopSpeech();
 
     speechQueue = splitIntoChunks(story.title + ". " + story.text);
@@ -159,13 +154,12 @@
     isPaused = false;
     isSpeaking = true;
 
-    // This is the "keep-alive" trick. We will ping the speech engine every 5 seconds
-    // to keep it "warm" and prevent it from creating awkward pauses between sentences.
+    // This is the "keep-alive" trick. to ping the speech engine every 5 seconds, so it prevents awkward pauses b/w sentences
     keepAliveInterval = setInterval(() => {
       speechSynthesis.resume();
     }, 5000);
 
-    // This delay prevents the very first word of the title from being cut off.
+    // delay prevents the very 1st word of the title from being cut off.
     setTimeout(() => {
       speakNextChunk();
     }, 250);
@@ -173,7 +167,7 @@
 
   function speakNextChunk() {
     if (currentChunkIndex >= speechQueue.length) {
-      // We've reached the end of the story, so we stop everything.
+      // end of the story
       stopSpeech();
       return;
     }
@@ -183,7 +177,7 @@
       const utterance = new SpeechSynthesisUtterance(chunk);
       const voices = speechSynthesis.getVoices();
 
-      // We set the voice on every single chunk to prevent it from changing mid-story.
+      //set the voice on every single chunk to prevent it from changing mid-story, this -->> done due to change of voice mid story issue
       utterance.voice = voices.find(v => v.name === selectedVoiceName) || voices[0];
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
@@ -198,15 +192,15 @@
     }
   }
 
-  // --- 6. Player Controls (Improved Logic) ---
+  // Player Controls Logic
 
-  // A new, dedicated function to stop and reset everything cleanly.
+  // function to stop and reset everything 
   function stopSpeech() {
     isSpeaking = false;
     isPaused = false;
     currentChunkIndex = 0;
     speechQueue = [];
-    // IMPORTANT: We must clear the keep-alive timer when we stop.
+    // clear the keep-alive timer when we stop.
     if (keepAliveInterval) {
       clearInterval(keepAliveInterval);
       keepAliveInterval = null;
@@ -219,7 +213,7 @@
 
     if (isPaused) {
       isPaused = false;
-      // When we resume, we also need to restart our keep-alive timer.
+      // to resume, we need to restart our keep-alive timer.
       keepAliveInterval = setInterval(() => { speechSynthesis.resume(); }, 5000);
       speechSynthesis.resume();
     } else if (!isSpeaking) {
@@ -230,7 +224,7 @@
   pauseBtn.addEventListener('click', () => {
     if (speechSynthesis.speaking && !isPaused) {
       isPaused = true;
-      // We must stop the keep-alive timer when paused, or it will force a resume!
+      // must stop the keep-alive timer when paused, or it will force a resume!
       clearInterval(keepAliveInterval);
       keepAliveInterval = null;
       speechSynthesis.pause();
@@ -238,11 +232,11 @@
   });
 
   stopBtn.addEventListener('click', () => {
-    // The stop button now just calls our new, clean stop function.
+    // The stop button calls stop function.
     stopSpeech();
   });
 
-  // --- 7. Sleep Timer Logic ---
+  // Sleep Timer Logic
   function startSleepTimerIfNeeded() {
     clearSleepTimer();
     const minutes = selectedSleepMinutes;
@@ -289,7 +283,7 @@
     if (e.key === 'Escape' || e.key === 'Enter') deactivateSleepOverlay();
   }
 
-  // --- 8. Initial Setup ---
+  // Init Setup
   window.addEventListener('beforeunload', () => {
     try { speechSynthesis.cancel(); } catch (e) { }
     clearSleepTimer();

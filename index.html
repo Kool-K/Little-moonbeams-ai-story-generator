@@ -12,10 +12,8 @@
   </head>
   <body>
     <div id="app" class="app">
-      <!-- This is the updated code with the new logo and tagline -->
       <header class="header">
         <div class="brand">
-          <!-- The placeholder div is now an image tag! -->
           <img
             src="assets/logo.png"
             alt="Little Moonbeams Logo"
@@ -23,7 +21,6 @@
           />
           <div>
             <h1 class="app-title">Little Moonbeams</h1>
-            <!-- The new tagline is here! -->
             <p class="app-sub">Stories Before Starlight</p>
           </div>
         </div>
@@ -42,7 +39,7 @@
 
           <p class="label small">Choose a story type</p>
           <div id="types" class="types" role="list">
-            <!-- Story type cards -->
+            <!-- story type cards -->
             <button
               class="type-card"
               data-type="Tenali Raman"
@@ -113,18 +110,16 @@
           </div>
 
           <!-- Voice Selection Dropdown -->
-          <!-- New structure for the custom voice dropdown -->
           <div class="row voice-row">
             <label class="label small">Narration Voice</label>
             <div class="custom-select-wrapper">
               <select id="voiceSelect"></select>
-              <!-- The real select is now hidden by CSS -->
               <div class="custom-select-display" tabindex="0">
                 <span id="customSelectValue">Select a voice...</span>
                 <span class="custom-arrow"></span>
               </div>
               <ul id="customSelectOptions" class="custom-select-options">
-                <!-- Options will be added here by JavaScript -->
+                <!-- Options will be added by Js here -->
               </ul>
             </div>
           </div>
@@ -158,7 +153,7 @@
       </main>
     </div>
 
-    <!-- Full-screen sleep overlay (hidden until timer expires) -->
+    <!-- Full-screen overlay / goodnight screen seen only after timer expires -->
     <div id="sleepOverlay" class="sleep-overlay" aria-hidden="true">
       <div class="sleep-centre">
         <div class="moon-large"></div>
