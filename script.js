@@ -1,5 +1,3 @@
-
-
 (() => {
   const moralInput = document.getElementById('moralInput');
   const typeCards = Array.from(document.querySelectorAll('.type-card'));
@@ -22,22 +20,21 @@
 
   const sleepOverlay = document.getElementById('sleepOverlay');
 
-  //State Variables
+  // --- State Variables ---
   let selectedType = null;
   let currentStory = null;
-  let selectedSleepMinutes = 0;
-  let sleepTimerId = null;
-  let sleepTimerIntervalId = null;
   let selectedVoiceName = null;
+  // timer variables representing sessions
+  let sessionTimeoutId = null; // ID for the main timer ->shows the overlay
+  let sessionIntervalId = null; // ID for the timer -> updates the countdown display
 
   // For chunked speech
   let speechQueue = [];
   let currentChunkIndex = 0;
   let isPaused = false;
   let isSpeaking = false;
-  let currentUtterance = null;
 
-  // Voice Population + Custom Dropdown Logic  used speechsynth version for this
+  // Voice Population + voice Dropdown Logic
   function populateVoiceList() {
     if (typeof speechSynthesis === 'undefined') return;
     const voices = speechSynthesis.getVoices();
@@ -77,7 +74,7 @@
     }
   });
 
-  // Event Listeners & Main App Flow
+  //  Event Listeners & Main App Flow
   typeCards.forEach(card => {
     card.addEventListener('click', () => {
       typeCards.forEach(c => c.setAttribute('aria-pressed', 'false'));
@@ -86,13 +83,18 @@
     });
   });
 
+
+  //  buttons directly start the session timer.
+  // They are the ONLY things that can start or change the timer when new timer is chosen by user older is scrapped
   timerBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       timerBtns.forEach(b => b.classList.remove('active-timer'));
       btn.classList.add('active-timer');
-      selectedSleepMinutes = Number(btn.dataset.value);
+      const minutes = Number(btn.dataset.value);
+      startSessionTimer(minutes); // Call the new session timer function
     });
   });
+
 
   generateBtn.addEventListener('click', async () => {
     const moral = moralInput.value.trim();
@@ -109,7 +111,6 @@
         body: JSON.stringify({
           storyType: selectedType,
           moral: moral,
-          duration: selectedSleepMinutes
         })
       });
       if (!response.ok) { throw new Error(`Server error: ${response.status}`); }
@@ -123,7 +124,7 @@
       storyContainer.appendChild(p);
       storyCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
       speak(currentStory);
-      startSleepTimerIfNeeded();
+      
     } catch (err) {
       console.error("Fetch Error:", err);
       storyTitle.textContent = "Couldn't create a story";
@@ -134,13 +135,10 @@
     }
   });
 
-  // Speech Synthesis with Chunking
 
-  // prevents the speech engine from sleeping.
+  //  Speech Synthesis with Chunking
   let keepAliveInterval = null;
-
   function splitIntoChunks(text) {
-
     const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
     return chunks ? chunks.map(c => c.trim()).filter(c => c) : [];
   }
@@ -148,18 +146,13 @@
   function speak(story) {
     if (!('speechSynthesis' in window)) return;
     stopSpeech();
-
     speechQueue = splitIntoChunks(story.title + ". " + story.text);
     currentChunkIndex = 0;
     isPaused = false;
     isSpeaking = true;
-
-    // This is the "keep-alive" trick. to ping the speech engine every 5 seconds, so it prevents awkward pauses b/w sentences
     keepAliveInterval = setInterval(() => {
       speechSynthesis.resume();
     }, 5000);
-
-    // delay prevents the very 1st word of the title from being cut off.
     setTimeout(() => {
       speakNextChunk();
     }, 250);
@@ -167,40 +160,29 @@
 
   function speakNextChunk() {
     if (currentChunkIndex >= speechQueue.length) {
-      // end of the story
       stopSpeech();
       return;
     }
-
     if (!isPaused) {
       const chunk = speechQueue[currentChunkIndex];
       const utterance = new SpeechSynthesisUtterance(chunk);
       const voices = speechSynthesis.getVoices();
-
-      //set the voice on every single chunk to prevent it from changing mid-story, this -->> done due to change of voice mid story issue
       utterance.voice = voices.find(v => v.name === selectedVoiceName) || voices[0];
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
-
-      // When this sentence is finished, automatically move to the next one.
       utterance.onend = () => {
         currentChunkIndex++;
         speakNextChunk();
       };
-
       speechSynthesis.speak(utterance);
     }
   }
 
-  // Player Controls Logic
-
-  // function to stop and reset everything 
   function stopSpeech() {
     isSpeaking = false;
     isPaused = false;
     currentChunkIndex = 0;
     speechQueue = [];
-    // clear the keep-alive timer when we stop.
     if (keepAliveInterval) {
       clearInterval(keepAliveInterval);
       keepAliveInterval = null;
@@ -210,10 +192,8 @@
 
   playBtn.addEventListener('click', () => {
     if (!currentStory) return;
-
     if (isPaused) {
       isPaused = false;
-      // to resume, we need to restart our keep-alive timer.
       keepAliveInterval = setInterval(() => { speechSynthesis.resume(); }, 5000);
       speechSynthesis.resume();
     } else if (!isSpeaking) {
@@ -224,7 +204,6 @@
   pauseBtn.addEventListener('click', () => {
     if (speechSynthesis.speaking && !isPaused) {
       isPaused = true;
-      // must stop the keep-alive timer when paused, or it will force a resume!
       clearInterval(keepAliveInterval);
       keepAliveInterval = null;
       speechSynthesis.pause();
@@ -232,42 +211,64 @@
   });
 
   stopBtn.addEventListener('click', () => {
-    // The stop button calls stop function.
     stopSpeech();
   });
 
-  // Sleep Timer Logic
-  function startSleepTimerIfNeeded() {
-    clearSleepTimer();
-    const minutes = selectedSleepMinutes;
-    if (!minutes) return;
+
+  // persistent timer that is independent of story generation.
+
+  /**
+   * Starts the main session timer.
+   * @param {number} minutes - The total duration for the session.
+   */
+  function startSessionTimer(minutes) {
+    clearSessionTimer(); //clear any existing timer before starting a new one.
+
+    if (minutes <= 0) {
+      return; // If "No Timer" is selected,clear existing it and stop.
+    }
+
     const endTime = Date.now() + minutes * 60 * 1000;
-    sleepTimerId = setTimeout(() => {
+
+    // main timer that will trigger the goodnight screen
+    sessionTimeoutId = setTimeout(() => {
       activateSleepOverlay();
-      try { speechSynthesis.cancel(); } catch (e) { }
-      clearSleepTimer();
+      clearSessionTimer();
     }, minutes * 60 * 1000);
-    sleepTimerIntervalId = setInterval(() => {
+
+    // This timer updates the visual countdown every sec
+    sessionIntervalId = setInterval(() => {
       const timeLeft = endTime - Date.now();
-      if (timeLeft < 0) { clearSleepTimer(); return; }
+      if (timeLeft < 0) {
+        clearSessionTimer();
+        return;
+      }
       const remainingMinutes = Math.floor((timeLeft / 1000) / 60);
       const remainingSeconds = Math.floor((timeLeft / 1000) % 60);
       timerDisplay.textContent = `${String(remainingMinutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     }, 1000);
+
     timerDisplay.classList.add('visible');
   }
 
-  function clearSleepTimer() {
-    if (sleepTimerId) clearTimeout(sleepTimerId);
-    if (sleepTimerIntervalId) clearInterval(sleepTimerIntervalId);
-    sleepTimerId = null;
-    sleepTimerIntervalId = null;
+  /**
+   * Clears all timer-related processes and hides the display.
+   */
+  function clearSessionTimer() {
+    if (sessionTimeoutId) clearTimeout(sessionTimeoutId);
+    if (sessionIntervalId) clearInterval(sessionIntervalId);
+    sessionTimeoutId = null;
+    sessionIntervalId = null;
     timerDisplay.classList.remove('visible');
   }
 
   function activateSleepOverlay() {
     sleepOverlay.classList.add('active');
     sleepOverlay.setAttribute('aria-hidden', 'false');
+    // Stop any story that is currently on
+    if (speechSynthesis.speaking) {
+      stopSpeech();
+    }
     sleepOverlay.addEventListener('click', deactivateSleepOverlay, { once: true });
     document.addEventListener('keydown', deactivateSleepOverlayOnce);
   }
@@ -275,18 +276,26 @@
   function deactivateSleepOverlay() {
     sleepOverlay.classList.remove('active');
     sleepOverlay.setAttribute('aria-hidden', 'true');
-    clearSleepTimer();
+    clearSessionTimer(); // Clear any leftover timer logic
     document.removeEventListener('keydown', deactivateSleepOverlayOnce);
+
+    timerBtns.forEach(btn => {
+      btn.classList.remove('active-timer');
+      if (btn.dataset.value === "0") {
+        btn.classList.add('active-timer');
+      }
+    });
   }
 
   function deactivateSleepOverlayOnce(e) {
     if (e.key === 'Escape' || e.key === 'Enter') deactivateSleepOverlay();
   }
 
-  // Init Setup
+
+  // --- Init Setup ---
   window.addEventListener('beforeunload', () => {
     try { speechSynthesis.cancel(); } catch (e) { }
-    clearSleepTimer();
+    clearSessionTimer();
   });
 
   if (typeof speechSynthesis !== 'undefined') {
