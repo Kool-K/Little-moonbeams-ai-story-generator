@@ -218,7 +218,7 @@
   // persistent timer that is independent of story generation.
 
   /**
-   * Starts the main session timer.
+   * Starts main session timer.
    * @param {number} minutes - The total duration for the session.
    */
   function startSessionTimer(minutes) {
