@@ -636,6 +636,28 @@ body {
   font-weight: 600; 
 }
 
+/* --- Footer Styles --- */
+
+footer {
+  text-align: center;
+  margin-top: 1px;
+  padding: 10px;
+  color: #888;
+  border-top: 1px solid #333;
+}
+
+footer a {
+  color: #58a6ff; 
+  font-weight: bold; 
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #fff; 
+  text-decoration: underline;
+}
+
 /* make site responsive */
 @media (max-width: 900px) {
   .app {
